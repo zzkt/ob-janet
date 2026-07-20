@@ -1,0 +1,206 @@
+# -*- mode: org;  coding: utf-8; -*-
+#+title: Org Babel support for Janet
+
+* Introduction
+
+=ob-janet= provides [[https://orgmode.org/manual/Working-with-Source-Code.html][Org Babel]] support for the [[https://janet-lang.org/][Janet language]] to enable Janet code blocks in literate Org files.
+
+* Installation
+** Manual Installation
+
+Download =ob-janet.el=, place it in the load path, and add a =require= to your init file. It may be necessary to set or customize =ob-janet-path= and =ob-janet-executable= if either can't be found by default.
+
+#+begin_src emacs-lisp
+(require 'ob-janet)
+(add-to-list 'org-babel-load-languages '(janet . t))
+#+end_src
+
+** via use-package
+
+#+begin_src emacs-lisp
+(use-package ob-janet
+  :after org
+  :init
+    (setq ob-janet-executable "janet"
+          ob-janet-path "/usr/local/lib/janet")
+  :config
+    (add-to-list 'org-babel-load-languages '(janet . t)))
+#+end_src
+
+** via straight.el
+
+#+begin_src emacs-lisp
+(use-package ob-janet
+  :straight (:host github :repo "zzkt/ob-janet")
+  :after org
+  :config
+  (add-to-list 'org-babel-load-languages '(janet . t)))
+#+end_src
+
+* Usage
+
+Execute a code block with =C-c C-c= using the header =:results output= to capture stdout,
+or =:results value= to capture the return value of the block.
+
+#+begin_src janet :results output
+(var void 'boundless)
+(print "I live in a boundless void.")
+(string "The void is " void)
+#+end_src
+
+#+RESULTS:
+: I live in a boundless void.
+
+#+begin_src janet :results value
+(var void 'boundless)
+(print "I live in a boundless void.")
+(string "The void is " void)
+#+end_src
+
+#+RESULTS:
+: The void is boundless
+
+Variables can be passed from named Org blocks (including tables) or assigned in the header
+
+#+name: characters
+| Name    | Age |
+|---------+-----|
+| Eleanor |  36 |
+| Jason   |  29 |
+| Kamilah |  31 |
+
+
+#+begin_src janet :var data=characters
+(each row data
+  (print (string "Name: " (row 0) ", Age: " (row 1))))
+#+end_src
+
+#+RESULTS:
+: Name: Eleanor, Age: 36
+: Name: Jason, Age: 29
+: Name: Kamilah, Age: 31
+
+
+#+begin_src janet :var x=10 y=20
+(print (+ x y))
+#+end_src
+
+#+RESULTS:
+: 30
+
+** Header arguments
+
+|--------------------+-------------------------------------------+---------|
+| Header             | Description                               | Default |
+|--------------------+-------------------------------------------+---------|
+| =:cmd= <path>        | Janet executable or path                  | =janet=   |
+| =:results= <format>  | Result format: =raw=, =none=, =output= or =value= | =output=  |
+| =:session= <name>    | Session name for persistent eval          | =none=    |
+| =:file= <path>       | Output file path                          | =none=    |
+| =:prologue= <code>   | Code to prepend before the body           | =none=    |
+| =:epilogue= <code>   | Code to append after the body             | =none=    |
+| =:debug=             | Show expanded body                        | =none=    |
+|--------------------+-------------------------------------------+---------|
+
+** Sessions
+
+Use =:session= for persistent state (sessions) across code blocks that share the same session name
+
+#+begin_src janet :session counter
+(var *count* 0)
+(defn increment [] (++ *count*) *count*)
+#+end_src
+
+#+RESULTS:
+: 0
+: <function increment>
+
+#+begin_src janet :session counter
+(increment)
+#+end_src
+#+RESULTS:
+: 1
+
+#+begin_src janet :session counter
+(increment)
+(increment)
+#+end_src
+
+#+RESULTS:
+: 2
+: 3
+
+** Prologue and Epilogue
+
+Use =:prologue= or =:epilogue= to include code before or after the main body of the src block.
+
+#+begin_src janet :prologue "(def phi 1.618)" :epilogue "(print phi^2)"
+(def phi^2 (+ phi 1))
+#+end_src
+
+#+RESULTS:
+: 2.618
+
+** File Output
+
+Use =:file= and a path to write output (or =value=) to a file
+
+#+begin_src janet :file numbers.txt
+(loop [i :range [1 11]]
+  (print i))
+#+end_src
+
+see: [[file:numbers.txt]]
+
+** Debug
+
+Preview expanded code, without evaluation, by adding =:debug= to the header. The output is the unevaluated code that would be sent to a Janet process.
+
+#+begin_src janet :var x=42 :debug
+(+ x 10)
+#+end_src
+
+#+RESULTS:
+: (def x 42)
+: (+ x 10)
+
+
+#+begin_src janet :var x=42 :results value :debug
+(+ x 10)
+#+end_src
+
+#+RESULTS:
+: (def x 42)
+: (import spork/test)
+: (pp (test/suppress-stdout (do (+ x 10))))
+
+* Customization
+
+Customize =ob-janet= settings with the =ob-janet= customization group, =M-x customize-group ob-janet=
+
+|-------------------------+---------------------------------------+------------------|
+| Variable                | Description                           | Default          |
+|-------------------------+---------------------------------------+------------------|
+| =ob-janet-executable=     | Path to Janet executable              | ="janet"=          |
+| =ob-janet-hline-to=       | Replacement for table hlines in Janet | ="nil"=            |
+| =ob-janet-nil-to=         | Replacement for Janet nil in results  | ='hline=           |
+| =ob-janet-value-wrapper=  | Template for wrapping value results   | see: ob-janet.el |
+| =ob-janet-output-wrapper= | Template for wrapping output results  | see: ob-janet.el |
+|-------------------------+---------------------------------------+------------------|
+
+* Troubleshooting
+** Janet not found
+
+Ensure =janet= is on your =PATH=, or customize =ob-janet-executable= to include the full path to =janet= executable.
+
+#+begin_src emacs-lisp
+(setq ob-janet-executable "/usr/local/bin/janet")
+#+end_src
+
+** Modules (or symbols) not found
+
+Modules and libraries are located using the =JANET_PATH= environment variable. If =JANET_PATH= is not set, or has been redefined, the variable =ob-janet-path= can be used to set the correct path.
+
+#+begin_src emacs-lisp
+(setq ob-janet-path "/usr/local/lib/janet/")
+#+end_src
