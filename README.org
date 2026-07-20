@@ -90,17 +90,17 @@ Variables can be passed from named Org blocks (including tables) or assigned in 
 
 ** Header arguments
 
-|--------------------+-------------------------------------------+---------|
-| Header             | Description                               | Default |
-|--------------------+-------------------------------------------+---------|
-| =:cmd= <path>        | Janet executable or path                  | =janet=   |
-| =:results= <format>  | Result format: =raw=, =none=, =output= or =value= | =output=  |
-| =:session= <name>    | Session name for persistent eval          | =none=    |
-| =:file= <path>       | Output file path                          | =none=    |
-| =:prologue= <code>   | Code to prepend before the body           | =none=    |
-| =:epilogue= <code>   | Code to append after the body             | =none=    |
-| =:debug=             | Show expanded body                        | =none=    |
-|--------------------+-------------------------------------------+---------|
+|-------------------+-------------------------------------------+---------|
+| *Header*            | *Description*                               | *Default* |
+|-------------------+-------------------------------------------+---------|
+| =:cmd= <path>       | Janet executable or path                  | =janet=   |
+| =:results= <format> | Result format: =raw=, =none=, =output= or =value= | =output=  |
+| =:session= <name>   | Session name for persistent eval          | =none=    |
+| =:file= <path>      | Output file path                          | =none=    |
+| =:prologue= <code>  | Code to prepend before the body           | =none=    |
+| =:epilogue= <code>  | Code to append after the body             | =none=    |
+| =:debug=            | Show expanded body                        | =none=    |
+|-------------------+-------------------------------------------+---------|
 
 ** Sessions
 
@@ -179,19 +179,19 @@ Preview expanded code, without evaluation, by adding =:debug= to the header. The
 Customize =ob-janet= settings with the =ob-janet= customization group, =M-x customize-group ob-janet=
 
 |-------------------------+---------------------------------------+------------------|
-| Variable                | Description                           | Default          |
+| *Variable*                | *Description*                           | *Default*          |
 |-------------------------+---------------------------------------+------------------|
 | =ob-janet-executable=     | Path to Janet executable              | ="janet"=          |
 | =ob-janet-hline-to=       | Replacement for table hlines in Janet | ="nil"=            |
 | =ob-janet-nil-to=         | Replacement for Janet nil in results  | ='hline=           |
-| =ob-janet-value-wrapper=  | Template for wrapping value results   | see: ob-janet.el |
-| =ob-janet-output-wrapper= | Template for wrapping output results  | see: ob-janet.el |
+| =ob-janet-value-wrapper=  | Template for wrapping value results   | see: [[file:ob-janet.el][ob-janet.el]] |
+| =ob-janet-output-wrapper= | Template for wrapping output results  | see: [[file:ob-janet.el][ob-janet.el]] |
 |-------------------------+---------------------------------------+------------------|
 
 * Troubleshooting
 ** Janet not found
 
-Ensure =janet= is on your =PATH=, or customize =ob-janet-executable= to include the full path to =janet= executable.
+Ensure =janet= is on your =PATH=, or customize =ob-janet-executable= to include the full path to the =janet= executable.
 
 #+begin_src emacs-lisp
 (setq ob-janet-executable "/usr/local/bin/janet")
