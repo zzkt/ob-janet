@@ -106,7 +106,7 @@ Variables can be passed from named Org blocks (including tables) or assigned in 
 
 Use =:session= for persistent state (sessions) across code blocks that share the same session name
 
-#+begin_src janet :session counter
+#+begin_src janet :session counter :async
 (var *count* 0)
 (defn increment [] (++ *count*) *count*)
 #+end_src
@@ -121,7 +121,7 @@ Use =:session= for persistent state (sessions) across code blocks that share the
 #+RESULTS:
 : 1
 
-#+begin_src janet :session counter
+#+begin_src janet :session counter :async
 (increment)
 (increment)
 #+end_src
