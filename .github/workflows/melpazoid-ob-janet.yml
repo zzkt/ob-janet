@@ -24,7 +24,7 @@ jobs:
       env:
         LOCAL_REPO: ${{ github.workspace }}
         # RECIPE is your recipe as written for MELPA:
-        RECIPE: (ob-janet :fetcher github :repo "zzkt/ob-janet" :files ("ob-janet.el"))
+        RECIPE: (ob-janet :fetcher codeberg :repo "zzkt/ob-janet" :files ("ob-janet.el"))
         # set this to false (or remove it) if the package isn't on MELPA:
         EXIST_OK: false
       run: echo $GITHUB_REF && make -C ~/melpazoid
