@@ -123,7 +123,8 @@
    ;; other
    (t (format "%S" value))))
 
-(defsubst ob-janet--vars-to-defs (vars)
+
+(defun ob-janet--vars-to-defs (vars)
   "Convert alist VARS to Janet (def name value) expressions."
   (mapconcat (lambda (pair)
                (format "(def %s %s)" (car pair) (ob-janet--to-janet (cdr pair))))
@@ -148,7 +149,7 @@
 
 ;;; Output parsing
 
-(defsubst ob-janet--parse-result (result)
+(defun ob-janet--parse-result (result)
   "Parse Janet RESULT string, substituting nil for ob-janet-nil-to."
   (let ((parsed (org-babel-script-escape (string-trim result))))
     (if (listp parsed)
@@ -164,7 +165,7 @@
 
 ;;; Sessions
 
-(defsubst ob-janet--session-p (session)
+(defun ob-janet--session-p (session)
   "Return non-nil if SESSION is a valid session name."
   (and session (not (string= session "none"))))
 
@@ -267,8 +268,8 @@
 
 ;;; Org-babel session functions
 
-(defun org-babel-prep-session:janet (session params)
-  "Prepare SESSION according to PARAMS."
+(defun org-babel-prep-session:janet (session _params)
+  "Prepare a Janet SESSION."
   (unless (ob-janet--session-p session)
     (error "Janet sessions require a :session name"))
   (ob-janet--initiate-session session))
