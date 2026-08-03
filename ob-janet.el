@@ -5,7 +5,7 @@
 ;; Author: nik gaffney <nik@fo.am>
 ;; Keywords: languages, tools, literate programming, janet
 ;; Homepage: https://codeberg.org/zzkt/ob-janet
-;; Version: 1.0.3
+;; Version: 1.0.4
 ;; Package-Requires: ((emacs "26.1") (org "9.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -87,7 +87,7 @@
 
 ;;; Elisp -> Janet conversion
 
-(defsubst ob-janet--to-janet (value)
+(defun ob-janet--to-janet (value)
   "Convert Elisp VALUE to Janet syntax."
   (cond
    ((eq value 'hline) ob-janet-hline-to)
@@ -98,31 +98,39 @@
    ((symbolp value) (format "'%s" value))
    ;; cons
    ((consp value)
-    (if (atom (cdr value))
-        (format "(tuple %s %s)"
-                (ob-janet--to-janet (car value))
-                (ob-janet--to-janet (cdr value)))
+    (if (and (cdr value) (atom (cdr value)))
+        (ob-janet--to-janet-tuple value)
       (concat "(tuple "
               (mapconcat #'ob-janet--to-janet value " ")
               ")")))
    ;; vector
    ((vectorp value)
-    (concat "(array " (mapconcat #'ob-janet--to-janet
-                                 (append value nil) " ")
+    (concat "(array "
+            (mapconcat #'ob-janet--to-janet
+                       (append value nil) " ")
             ")"))
    ;; hash table
    ((hash-table-p value)
     (let ((pairs nil))
       (maphash (lambda (k v)
-                 (push (format "%s %s"
-                               (ob-janet--to-janet k)
-                               (ob-janet--to-janet v))
+                 (push (ob-janet--to-janet-hash k v)
                        pairs))
                value)
       (concat "(table " (mapconcat #'identity pairs " ") ")")))
    ;; other
    (t (format "%S" value))))
 
+(defun ob-janet--to-janet-tuple (value)
+  "Convert Elisp VALUE to Janet tuple syntax."
+  (format "(tuple %s %s)"
+          (ob-janet--to-janet (car value))
+          (ob-janet--to-janet (cdr value))))
+
+(defun ob-janet--to-janet-hash (key value)
+  "Convert Elisp KEY, VALUE pair to Janet syntax."
+  (format "%s %s"
+          (ob-janet--to-janet key)
+          (ob-janet--to-janet value)))
 
 (defun ob-janet--vars-to-defs (vars)
   "Convert alist VARS to Janet (def name value) expressions."
