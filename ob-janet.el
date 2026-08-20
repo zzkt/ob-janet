@@ -126,11 +126,13 @@
           (ob-janet--to-janet (car value))
           (ob-janet--to-janet (cdr value))))
 
+
 (defun ob-janet--to-janet-hash (key value)
   "Convert Elisp KEY, VALUE pair to Janet syntax."
   (format "%s %s"
           (ob-janet--to-janet key)
           (ob-janet--to-janet value)))
+
 
 (defun ob-janet--vars-to-defs (vars)
   "Convert alist VARS to Janet (def name value) expressions."
@@ -164,6 +166,7 @@
         (mapcar (lambda (el) (if (equal el 'nil) ob-janet-nil-to el)) parsed)
       parsed)))
 
+
 (defun ob-janet--parse-session-output (output)
   "Parse session OUTPUT, extracting result after echoed code."
   ;; Remove any comint prompts and echoed input. keep the result
@@ -194,6 +197,7 @@
              "^repl:[0-9]+:> ")))
     (format "*%s*" name)))
 
+
 (defun ob-janet--execute-to-session (code session)
   "Send CODE to SESSION and return output."
   (let ((buf (ob-janet--initiate-session session)))
@@ -213,9 +217,11 @@
         ;; Return everything after start (includes echoed code & output)
         (buffer-substring-no-properties start (point-max))))))
 
+
 (defun ob-janet--execute-to-file (expanded file)
   "Execute EXPANDED code and write output to FILE."
-  (let ((result (ob-janet--execute-external expanded ob-janet-executable)))
+  (let ((result (ob-janet--execute-external
+                 expanded ob-janet-executable)))
     (with-temp-file file (insert result))
     nil))
 

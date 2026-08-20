@@ -6,6 +6,9 @@
 =ob-janet= provides [[https://orgmode.org/manual/Working-with-Source-Code.html][Org Babel]] support for the [[https://janet-lang.org/][Janet language]] to enable Janet code blocks in literate Org files.
 
 * Installation
+
+The package can be installed from [[https://melpa.org/#/ob-janet][MELPA]] or manually via [[https://codeberg.org/zzkt/ob-janet][codeberg]].
+
 ** Manual Installation
 
 Download =ob-janet.el=, place it in the load path, and add a =require= to your init file. It may be necessary to set or customize =ob-janet-path= and =ob-janet-executable= if either can't be found by default.
@@ -143,7 +146,7 @@ Use =:prologue= or =:epilogue= to include code before or after the main body of 
 
 ** File Output
 
-Use =:file= and a path to write output (or =value=) to a file
+Use =:file= with a path to write output (or =value=) to a file
 
 #+begin_src janet :file numbers.txt
 (loop [i :range [1 11]]
